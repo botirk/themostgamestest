@@ -109,9 +109,9 @@ export default () => {
   const onCount = () => dispatch(saveCsv(filteredParsedCsv));
 
   //console.log(parsedCsv.length, filteredParsedCsvWithDuplicates.length)
-  return <div disabled={state==='loading'} className="d-flex flex-wrap align-items-center gap-2">
+  return <div className="d-flex flex-wrap align-items-center gap-2">
     <Description mistakes={parsedCsv.length !== filteredParsedCsvWithDuplicates.length}/>
     <CsvInput dispatch={dispatch}/>
-    <button onClick={onCount} type="button" className="btn btn-primary btn-lg">подсчитать</button>
+    <button disabled={state==='loading'} onClick={onCount} type="button" className="btn btn-primary btn-lg">подсчитать</button>
   </div>
 }
