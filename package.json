@@ -1,0 +1,37 @@
+{
+  "type": "module",
+  "name": "themostgamestest",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "chmod": "sudo chmod -R 775 .",
+    "serve": "npx webpack serve"
+  },
+  "keywords": [
+    "test",
+    "job",
+    "themostgames"
+  ],
+  "author": "botirk",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/preset-env": "^7.14.8",
+    "@babel/preset-react": "^7.14.5",
+    "@reduxjs/toolkit": "^1.6.1",
+    "babel-loader": "^8.2.2",
+    "bootstrap": "^5.0.2",
+    "css-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.3.2",
+    "react": "^17.0.2",
+    "react-bootstrap": "^1.6.1",
+    "react-contenteditable": "^3.3.5",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
+    "redux": "^4.1.0",
+    "style-loader": "^3.2.1",
+    "webpack": "^5.46.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
