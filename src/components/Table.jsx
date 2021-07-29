@@ -27,7 +27,7 @@ const finish = (dispatch) => (JSONs) => {
   // console.log(texts);
   const textsWithStats = texts.map((text) => ({
     text,
-    wordCount: (text.match(/[a-zа-я']+/gi) ?? []).length,
+    wordCount: (text.match(/[a-zа-я']+\-*[a-zа-я']+/gi) ?? []).length,
     vowelCount: (text.match(/[AEIOUаиеёоуыэюяáéýíóúæøåÆÅäöü]/gi) ?? []).length,
   }));
   dispatch(successLoading(textsWithStats));
