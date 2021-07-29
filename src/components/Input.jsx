@@ -8,14 +8,16 @@ const parseCsv = (str, includeDelimitersAndEmpty = true) => (includeDelimitersAn
   : str.split(/[,;]+/).filter((str) => str.length !== 0)) ?? [];
 // detect numbers
 const isNumberFits = (numberStr, min = 1, max = 20) => {
-  if (/\s*[0-9]+\s*/.test(numberStr) === false) return false;
+  if (/^\s*[0-9]+\s*$/.test(numberStr) === false) return false;
   const number = Number.parseInt(numberStr);
   return number >= min && number <= max;
 };
 
 const filterParsedCsv = (strArray, removeDuplicates = true) => strArray.reduce((acc, str) => {
   if (isNumberFits(str) === true
-        && (removeDuplicates === false || acc.includes(parseInt(str)) === false)) { acc.push(parseInt(str)); }
+    && (removeDuplicates === false || acc.includes(parseInt(str)) === false)) { 
+      acc.push(parseInt(str)); 
+    }
   return acc;
 }, []);
 
