@@ -1,6 +1,8 @@
+/* eslint-disable no-param-reassign */
+// because it is required
 import { createSlice } from '@reduxjs/toolkit';
 
-const appSlice = createSlice({  
+const appSlice = createSlice({
   name: 'app',
   initialState: {
     userStr: '',
@@ -33,5 +35,7 @@ const appSlice = createSlice({
   },
 });
 
-export const { saveCsv, saveUserStr, startLoading, successLoading, errorLoading } = appSlice.actions;
+export const {
+  saveCsv, saveUserStr, startLoading, successLoading, errorLoading,
+} = appSlice.actions;
 export default appSlice.reducer;

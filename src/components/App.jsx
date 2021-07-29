@@ -7,7 +7,7 @@ import store from '../slices/store.js';
 import Input from './Input.jsx';
 import Table from './Table.jsx';
 
-export default () => 
+export default () => (
   <Provider store={store()}>
     <div className="container">
       <div className="my-3">
@@ -15,6 +15,7 @@ export default () =>
       </div>
       <div className="my-3">
         <Table />
-      </div> 
+      </div>
     </div>
-  </Provider>;
+  </Provider>
+);
