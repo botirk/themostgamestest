@@ -1,9 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { startLoading, errorLoading, successLoading } from '../slices/app.js';
+import offlineSamples from '../offlineSamples.js';
 
 // data processing stages
-const combineFetches = (fetches) => Promise.all(fetches);
+// async
+const combineAsync = (fetches) => Promise.all(fetches);
+const getJsonAsync = (responses) => combineAsync(responses.map((response) => response.json()));
+// sync
 const filterErrors = (dispatch) => (responses) => responses.reduce((acc, response) => {
   switch (response.status) {
     case 200:
@@ -20,21 +24,44 @@ const filterErrors = (dispatch) => (responses) => responses.reduce((acc, respons
       return acc;
   }
 }, []);
-const getJSON = (responses) => combineFetches(responses.map((response) => response.json()));
+const textStats = (text) => ({
+  text,
+  wordCount: (text.match(/[a-zа-я']+-*[a-zа-я']*/gi) ?? []).length,
+  vowelCount: (text.match(/[AEIOUаиеёоуыэюяáéýíóúæøåÆÅäöü]/gi) ?? []).length,
+});
 const finish = (dispatch) => (JSONs) => {
   // console.log(JSONs);
-  const texts = JSONs.map((JSON) => JSON.text);
-  // console.log(texts);
-  const textsWithStats = texts.map((text) => ({
-    text,
-    wordCount: (text.match(/[a-zа-я']+-*[a-zа-я']+/gi) ?? []).length,
-    vowelCount: (text.match(/[AEIOUаиеёоуыэюяáéýíóúæøåÆÅäöü]/gi) ?? []).length,
-  }));
+  const textsWithStats = JSONs.map((JSON) => textStats(JSON.text));
+  // console.log(textsWithStats);
   dispatch(successLoading(textsWithStats));
 };
 const fetchCatcher = (dispatch) => (error) => {
-  if (error.message.toLowerCase().includes('network')) { dispatch(errorLoading('Ошибка сети при попытке связи с сервером')); } else { dispatch(errorLoading(`Ошибка ${error.message}`)); }
+  if (error.message.toLowerCase().includes('network')) { 
+    dispatch(errorLoading('Ошибка сети при попытке связи с сервером')); 
+  } else { 
+    dispatch(errorLoading(`Ошибка ${error.message}`)); 
+  }
 };
+const processCsv = (csv, dispatch, useServer = false) => {
+  if (useServer === true || window.useServer === true) {
+    dispatch(startLoading());
+    
+    const fetches = csv.map((number) => fetch(`http://tmgwebtest.azurewebsites.net/api/textstrings/${number}`,
+      { headers: { 'TMG-Api-Key': '0J/RgNC40LLQtdGC0LjQutC4IQ==' } }));
+
+    combineAsync(fetches)
+      .then(filterErrors(dispatch))
+      .then(getJsonAsync)
+      .then(finish(dispatch))
+      .catch(fetchCatcher(dispatch));
+  } else {
+    dispatch(startLoading());
+
+    finish(dispatch)(offlineSamples
+      .filter((_, i) => csv.includes(i))
+      .map((text) => ({ text })));
+  }
+}
 // react components
 const Error = () => {
   const error = useSelector((state) => state.app.error);
@@ -72,16 +99,7 @@ export default () => {
   // ask server for texts in exchange of csv
   useEffect(() => {
     if (csv === undefined) return;
-    const fetches = csv.map((number) => fetch(`http://tmgwebtest.azurewebsites.net/api/textstrings/${number}`,
-      { headers: { 'TMG-Api-Key': '0J/RgNC40LLQtdGC0LjQutC4IQ==' } }));
-
-    combineFetches(fetches)
-      .then(filterErrors(dispatch))
-      .then(getJSON)
-      .then(finish(dispatch))
-      .catch(fetchCatcher(dispatch));
-
-    dispatch(startLoading());
+    processCsv(csv, dispatch);
   });
 
   return (

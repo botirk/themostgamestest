@@ -9,7 +9,8 @@
     "chmod": "sudo chmod -R 775 .",
     "serve": "npx webpack serve",
     "lint": "npx eslint .",
-    "lint+fix": "npx eslint . --fix"
+    "lint+fix": "npx eslint . --fix",
+    "build": "NODE_ENV=production npx webpack --mode production"
   },
   "keywords": [
     "test",
