@@ -42,11 +42,15 @@ const fetchCatcher = (dispatch) => (error) => {
     dispatch(errorLoading(`Ошибка ${error.message}`)); 
   }
 };
+// all-in-one function
 const processCsv = (csv, dispatch, useServer = false) => {
   if (useServer === true || window.useServer === true) {
     dispatch(startLoading());
     
-    const fetches = csv.map((number) => fetch(`http://tmgwebtest.azurewebsites.net/api/textstrings/${number}`,
+    let protocol = (location.protocol === 'https:') ? 'https' : 'http';
+    let link = `${protocol}://tmgwebtest.azurewebsites.net/api/textstrings/`;
+
+    const fetches = csv.map((number) => fetch(`${link}${number}`,
       { headers: { 'TMG-Api-Key': '0J/RgNC40LLQtdGC0LjQutC4IQ==' } }));
 
     combineAsync(fetches)
