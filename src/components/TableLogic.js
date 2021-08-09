@@ -1,6 +1,30 @@
 import { startLoading, errorLoading, successLoading } from '../slices/app.js';
 import offlineSamples from '../offlineSamples.js';
 
+// sync
+const filterErrors = (dispatch, responses) => responses.reduce((acc, response) => {
+  switch (response.status) {
+    case 200:
+      acc.push(response);
+      break;
+    case 401:
+      dispatch(errorLoading('Ошибка при авторизации'));
+      break;
+    case 404:
+      dispatch(errorLoading('Сервер не найден'));
+      break;
+    default:
+      dispatch(errorLoading(`Ошибка :#${response.status}`));
+      break;
+  }
+  return acc;
+}, []);
+
+const textStats = (text) => ({
+  text,
+  wordCount: (text.match(/[a-zа-я']+-*[a-zа-я']*/gi) ?? []).length,
+  vowelCount: (text.match(/[AEIOUаиеёоуыэюяáéýíóúæøåÆÅäöü]/gi) ?? []).length,
+});
 // async
 const combineAsync = async (fetches) => Promise.all(fetches);
 
@@ -40,27 +64,3 @@ export const processCsvAsync = async (csv, dispatch, useServer = false) => {
     dispatch(successLoading(textsWithStats));
   }
 };
-// sync
-const filterErrors = (dispatch, responses) => responses.reduce((acc, response) => {
-  switch (response.status) {
-    case 200:
-      acc.push(response);
-      break;
-    case 401:
-      dispatch(errorLoading('Ошибка при авторизации'));
-      break;
-    case 404:
-      dispatch(errorLoading('Сервер не найден'));
-      break;
-    default:
-      dispatch(errorLoading(`Ошибка :#${response.status}`));
-      break;
-  }
-  return acc;
-}, []);
-
-const textStats = (text) => ({
-  text,
-  wordCount: (text.match(/[a-zа-я']+-*[a-zа-я']*/gi) ?? []).length,
-  vowelCount: (text.match(/[AEIOUаиеёоуыэюяáéýíóúæøåÆÅäöü]/gi) ?? []).length,
-});
