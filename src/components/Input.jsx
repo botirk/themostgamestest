@@ -18,7 +18,8 @@ const Description = ({ mistakes = false }) => {
   );
 };
 
-const CsvInput = React.memo(({ dispatch }) => {
+const CsvInput = React.memo(() => {
+  const dispatch = useDispatch();
   // when user enters something
   const onChange = (event) => {
     // console.log(event);
@@ -65,7 +66,7 @@ export default () => {
   return (
     <div className="d-flex flex-wrap align-items-center gap-2">
       <Description mistakes={parsedCsv.length !== filteredParsedCsvWithDuplicates.length} />
-      <CsvInput dispatch={dispatch} />
+      <CsvInput />
       <button disabled={state === 'loading'} onClick={onCount} type="button" className="btn btn-primary btn-lg">подсчитать</button>
     </div>
   );

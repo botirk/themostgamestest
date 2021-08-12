@@ -8,7 +8,6 @@ const appSlice = createSlice({
     userStr: '',
     csv: undefined,
     state: 'waiting', // waiting, loading
-    error: undefined,
     tableData: undefined,
   },
   reducers: {
@@ -22,20 +21,18 @@ const appSlice = createSlice({
       state.tableData = undefined;
       state.csv = undefined;
       state.state = 'loading';
-      state.error = undefined;
     },
     successLoading(state, action) {
       state.tableData = action.payload;
       state.state = 'waiting';
     },
-    errorLoading(state, action) {
+    errorLoading(state) {
       state.state = 'waiting';
-      state.error = action.payload;
     },
   },
 });
 
 export const {
-  saveCsv, saveUserStr, startLoading, successLoading, errorLoading,
+  saveCsv, saveUserStr, startLoading, successLoading, errorLoading
 } = appSlice.actions;
 export default appSlice.reducer;

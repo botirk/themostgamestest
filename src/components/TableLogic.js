@@ -1,20 +1,23 @@
-import { startLoading, errorLoading, successLoading } from '../slices/app.js';
+import { startLoading, successLoading, errorLoading } from '../slices/app.js';
 import offlineSamples from '../offlineSamples.js';
 
 // sync
-const filterErrors = (dispatch, responses) => responses.reduce((acc, response) => {
+const filterErrors = (dispatch, setError, responses) => responses.reduce((acc, response) => {
   switch (response.status) {
     case 200:
       acc.push(response);
       break;
     case 401:
-      dispatch(errorLoading('Ошибка при авторизации'));
+      setError('Ошибка при авторизации');
+      dispatch(errorLoading());
       break;
     case 404:
-      dispatch(errorLoading('Сервер не найден'));
+      setError('Сервер не найден');
+      dispatch(errorLoading());
       break;
     default:
-      dispatch(errorLoading(`Ошибка :#${response.status}`));
+      setError(`Ошибка: ${response.status}`);
+      dispatch(errorLoading());
       break;
   }
   return acc;
@@ -28,12 +31,13 @@ const textStats = (text) => ({
 // async
 const combineAsync = async (fetches) => Promise.all(fetches);
 
-const getJsonAsync = async (responses) => (
+const getJSONsAsync = async (responses) => (
   combineAsync(responses.map((response) => response.json())));
 
 // all-in-one function
-export const processCsvAsync = async (csv, dispatch, useServer = false) => {
+export const processCsvAsync = async (csv, dispatch, setError, useServer = false) => {
   if (useServer === true || window.useServer === true) {
+    setError(undefined);
     dispatch(startLoading());
 
     const protocol = (location.protocol === 'https:') ? 'https' : 'http';
@@ -42,20 +46,23 @@ export const processCsvAsync = async (csv, dispatch, useServer = false) => {
       const responses = await combineAsync(csv.map((number) => fetch(`${link}${number}`,
         { headers: { 'TMG-Api-Key': '0J/RgNC40LLQtdGC0LjQutC4IQ==' } })));
 
-      const filteredResponses = filterErrors(dispatch, responses);
-      const JSONs = await getJsonAsync(filteredResponses);
+      const filteredResponses = filterErrors(dispatch, setError, responses);
+      const JSONs = await getJSONsAsync(filteredResponses);
       // console.log(JSONs);
       const textsWithStats = JSONs.map((JSON) => textStats(JSON.text));
       // console.log(textsWithStats);
       dispatch(successLoading(textsWithStats));
     } catch (error) {
       if (error.message.toLowerCase().includes('network')) {
-        dispatch(errorLoading('Ошибка сети при попытке связи с сервером'));
+        setError('Ошибка сети при попытке связи с сервером');
+        dispatch(errorLoading());
       } else {
-        dispatch(errorLoading(`Ошибка ${error.message}`));
+        setError(`Ошибка ${error.message}`);
+        dispatch(errorLoading());
       }
     }
   } else {
+    setError(undefined);
     dispatch(startLoading());
     const JSONs = offlineSamples.filter((_, i) => csv.includes(i));
     // console.log(JSONs);
